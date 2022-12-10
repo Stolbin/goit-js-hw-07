@@ -1,29 +1,39 @@
-import { galleryItems } from './gallery-items.js';
-// Change code below this line
+import { galleryItems } from "./gallery-items.js";
 
-console.log(galleryItems);
-const gallery = document.querySelector(".gallery");
-const galleryRef = document.createElement('div');
-galleryRef.classList = 'gallery__item';
+const galleryBoxrRef = document.querySelector('.gallery');
+const createGalleryMarkup = createCardsImgMarkup(galleryItems);
+galleryBoxrRef.insertAdjacentHTML('afterbegin', createGalleryMarkup);
+galleryBoxrRef.addEventListener("click", onGalleryClick);
 
-
-
-function createGallary() {
-const galleryItemRef = document.createElement('a');
-galleryItemRef.classList = 'gallery__link';
-galleryItemRef.setAttribute('href', 'large-image.jpg' );
-galleryItemRef = document.createDocumentFragment();
-    for (let i = 0; i < galleryItems.length; i += 1) {
-        const galleryImgRef = `<img
-        class="gallery__image"
-        src="small-image.jpg"
-        data-source="large-image.jpg"
-        alt="${galleryItems.description}"
-        />`;
-        galleryItemRef.appendChild(galleryImgRef.preview);
+function onGalleryClick(event) {
+  event.preventDefault();
+  if (event.target.nodeName !== "IMG") {
+    return;
+  }
+  const pattern = basicLightbox.create(
+    `<img src="${event.target.dataset.source}"width="1280">`,
+    {
+      onShow: (pattern) => {
+        galleryBoxrRef.addEventListener('keydown', onGalleryClickEsc);
+      },
+      onClose: (pattern) => {
+        galleryBoxrRef.removeEventListener("keydown", onGalleryClickEsc);
+      },
     }
-    galleryRef.appendChild(galleryItemRef);
-};
+  );
+    pattern.show();
+    
+    function onGalleryClickEsc(event) {
+    if (event.code === 'Escape') {
+      pattern.close();
+    }
+  }
+}
 
-gallery.insertAdjacentHTML('afterbegin', galleryRef);
-console.log(gallery);
+function createCardsImgMarkup(gallery) {
+  return gallery
+    .map(({ preview, original, description }) => {
+      return `<div class="gallery__item"><a class="gallery__link" href="${original}"><img class="gallery__image" src="${preview}" data-source="${original}" alt="${description}"></a></div>`;
+    })
+    .join("");
+}
