@@ -17,4 +17,5 @@ function createCardsImg(galleryItems) {
 const ligthBox = new SimpleLightbox(".gallery__item", {
   captionsData: "alt",
   captionDelay: 250,
+  close: false,
 });
